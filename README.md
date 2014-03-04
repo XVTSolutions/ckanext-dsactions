@@ -1,18 +1,20 @@
-ckanext-xvt
+ckanext-dsactions
 ===========
+
+Adds an 'Actions' tab when you view a dataset (as a user with editing permission for the dataset). The Actions tab contains the clone feature and can easily be extended to include other things to 'action' against a dataset.
 
 Install
 ------
 
 `cd /usr/lib/ckan/default/src/`
 
-`git clone https://github.com/XVTSolutions/ckanext-xvt`
+`git clone https://github.com/XVTSolutions/ckanext-dsactions`
 
-`python ckanext-xvt/setup.py develop`
+`python ckanext-dsactions/setup.py develop`
 
 
-Add `xvt` to your .ini file
+Add `dsactions` to your .ini file
 
-When paster serve (or apache) runs this, it will create a table in the DB called *alpha*
+When paster serve (or apache) runs this.
 
 
