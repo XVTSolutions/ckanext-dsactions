@@ -1,0 +1,7 @@
+{% ckan_extends %}
+
+{% block content_primary_nav %}
+  {{ super() }}
+  {{ h.build_nav_icon('actions', _('Actions'), id=pkg.name, icon='icon-fighter-jet') }}
+{% endblock %}
+
