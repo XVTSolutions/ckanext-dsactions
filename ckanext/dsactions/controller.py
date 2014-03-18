@@ -74,16 +74,21 @@ class ActionController(BaseController):
                     plugins.toolkit.c.pkg_dict = plugins.toolkit.get_action('package_show')(context, {'id': id})
                     plugins.toolkit.c.pkg = context['package']
                     plugins.toolkit.c.resources_json = h.json.dumps(plugins.toolkit.c.pkg_dict.get('resources', []))
+                    
+                    errorsOther = dict(ve.error_dict)
+                    if 'name' in errorsOther:
+                        del errorsOther['name']
 
                     vars = {
                         'errors': ve.error_dict,
+                        'errorsOther' : errorsOther,
                         'data': {
                                  'title' : title,
                                  'name': name
                                 }
                        }
 
-                    return plugins.toolkit.render("index2.html", extra_vars = vars)
+                    return plugins.toolkit.render("dsaction-index.html", extra_vars = vars)
 
                 ckan.plugins.toolkit.redirect_to(controller="package", action="edit", id=pkg_dict_new['id'])
 

@@ -32,8 +32,21 @@
 
 		  {{ form.prepend('name', id='field-name', label=_('URL'), prepend=prefix, placeholder=_('eg. my-dataset'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
 		{% endblock %}
-            <input type="hidden" name="action-type" value="clone"/>
-    		<input type="submit" class="btn btn-primary" value="{{ _('Clone') }}" style="margin-bottom: 20px;" />
+		
+		{% if errorsOther %}
+		    <div class="error-explanation alert alert-error">
+		      <p>{{ _('Dataset cannot be cloned because the following require fields are missing:') }}</p>
+		      <ul>
+		        {% for key, error in errorsOther.items() %}
+		          <li data-field-label="{{ key }}">{% if key %}{{ key }}: {% endif %}{{ error }}</li>
+		        {% endfor %}
+		      </ul>
+		      <p style="text-decoration:underline">{% link_for 'Please provide values for these fields then try again.', controller='package', action='edit', id=pkg.name %}</p>
+		    </div>
+		  {% endif %}
+		
+        <input type="hidden" name="action-type" value="clone"/>
+   		<input type="submit" class="btn btn-primary" value="{{ _('Clone') }}" style="margin-bottom: 20px;" />
   </form>
 
 {% endblock %}
