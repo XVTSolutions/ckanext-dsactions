@@ -17,4 +17,9 @@ Add `dsactions` to your .ini file
 
 When paster serve (or apache) runs this.
 
+Export
+------
+Can export the entire db with the following command
+paster --plugin=ckanext-dsactions export -c /etc/ckan/default/development.ini
+
 

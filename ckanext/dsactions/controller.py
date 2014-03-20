@@ -1,3 +1,4 @@
+import os
 import datetime
 import pylons
 import ckan
@@ -8,12 +9,12 @@ import paste.fileapp
 import ckan.lib.uploader as uploader
 from cgi import FieldStorage
 from ckan.logic.converters import convert_package_name_or_id_to_id as convert_to_id
-import ckan.lib.dumper as dumper
+
 from ckan.common import request, response
-import mimetypes
 import tempfile
 import zipfile
 import shutil
+from export import exportPackages
 
 class ActionController(BaseController):
 
@@ -133,36 +134,7 @@ class ActionController(BaseController):
                 pid = convert_to_id(id, context)
                 query = ckan.model.Session.query(ckan.model.Package).filter(ckan.model.Package.id == pid)
                 
-                #create temporary directory
-                tmp_dir = tempfile.mkdtemp()
-                             
-                #dump package to json   
-                file_json = open('%s/package.json' % tmp_dir, 'w')
-                dumper.SimpleDumper().dump_json(file_json, query)
-                file_json.flush()
-                
-                #dump package to csv   
-                file_csv = open('%s/package.csv' % tmp_dir, 'w')
-                dumper.SimpleDumper().dump_csv(file_csv, query)
-                file_csv.flush()
-                
-                #add resource files to tmp directory
-                pkg_dict = plugins.toolkit.get_action('package_show')(None, {'id': id})
-                resources = pkg_dict['resources']
-                
-                for resource in resources:
-                    if resource['url_type'] == 'upload':
-                        #copy file
-                        upload = uploader.ResourceUpload(resource)
-                        filepath = upload.get_path(resource['id'])
-                        shutil.copyfile(filepath, '%s/%s_%s' % (tmp_dir,resource['id'],resource['url'].split('/')[-1]))
-                        
-                
-                #zip directory up
-                file_zip_path = '%s.zip' % tmp_dir
-                file_zip = zipfile.ZipFile(file_zip_path, 'w')
-                zipdir(tmp_dir, file_zip)
-                file_zip.close()
+                file_zip_path = exportPackages(query)
                 
                 #serve zip file
                 fileapp = paste.fileapp.FileApp(file_zip_path)
@@ -172,12 +144,10 @@ class ActionController(BaseController):
                 content_type = 'application/zip'
                 response.headers['Content-Type'] = content_type
                 response.status = status
+                
+                #remove tmp zip file - not sure if this will cause issues deleting the file before it has been fully served?
+                os.remove(file_zip_path)
+                
                 return app_iter
             
             return plugins.toolkit.render("dsaction-index.html", extra_vars=vars)
-
-def zipdir(path, zip):
-    import os
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            zip.write(os.path.join(root, file), file)

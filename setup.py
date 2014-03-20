@@ -26,5 +26,8 @@ setup(
         [ckan.plugins]
     # Add plugins here, eg
     dsactions=ckanext.dsactions.plugin:DSActionsPluginClass
+    
+        [paste.paster_command]
+    export=ckanext.dsactions.commands.export:ExportCommand
     """,
 )
