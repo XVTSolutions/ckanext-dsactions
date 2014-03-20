@@ -9,9 +9,9 @@
   <h2>Export</h2>
   <p>Export contents of this dataset to file (A .zip file is created if the dataset contains resources in the filestore)</p>
 
-  <form class="dataset-form form-horizontal" method="post" style="border-bottom: solid 1px #ddd">
+  <form class="dataset-form form-horizontal" method="get" style="border-bottom: solid 1px #ddd">
       <input type="hidden" name="action-type" value="export"/>
-      <input disabled="disabled" type="submit" class="btn btn-primary" value="{{ _('Export') }}" style="margin-bottom: 20px;" />
+      <input type="submit" class="btn btn-primary" value="{{ _('Export') }}" style="margin-bottom: 20px;" />
   </form>
   </div>
 
