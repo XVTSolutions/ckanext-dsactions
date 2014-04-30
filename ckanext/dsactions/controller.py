@@ -15,6 +15,7 @@ import tempfile
 import zipfile
 import shutil
 from export import exportPackages
+from ckanext.review.model import get_package_review, add_package_review, update_package_review
 
 class ActionController(BaseController):
 
@@ -100,7 +101,16 @@ class ActionController(BaseController):
                     for resource in resources:
                         resource['package_id'] = pkg_dict_new['id']
                         plugins.toolkit.get_action('resource_create')(context, resource)
-                    
+
+                    #if package already has a review date set, return it...
+                    if pkg_dict.get('next_review_date'):
+                        package_review = get_package_review(ckan.model.Session, pkg_dict_new['id'])
+                        if package_review:
+                            package_review.next_review_date = pkg_dict.get('next_review_date')
+                            update_package_review(context['session'], package_review)
+                        else:
+                            add_package_review(context['session'], pkg_dict_new['id'], pkg_dict.get('next_review_date'))
+
                 except plugins.toolkit.ValidationError as ve:
                     plugins.toolkit.c.pkg_dict = plugins.toolkit.get_action('package_show')(context, {'id': id})
                     plugins.toolkit.c.pkg = context['package']
