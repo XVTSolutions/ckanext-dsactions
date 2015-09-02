@@ -5,51 +5,12 @@
 
 {% block primary_content_inner %}
   <h1>Actions</h1>
-  <div>
-  <h2>Export</h2>
-  <p>Export contents of this dataset to file (A .zip file is created if the dataset contains resources in the filestore)</p>
+  {% block export_fields %}
+    {% snippet 'package/snippets/dsaction-export.html', pkg=pkg, data=data, errors=errors, form=form %}
+  {% endblock %}
 
-  <form class="dataset-form form-horizontal" method="get" style="border-bottom: solid 1px #ddd">
-      <input type="hidden" name="action-type" value="export"/>
-      <input type="submit" class="btn btn-primary" value="{{ _('Export') }}" style="margin-bottom: 20px;" />
-  </form>
-  </div>
-
-  {% if h.check_access('package_update', {'id': pkg.id}) %}
-
-  <h2>Clone</h2>
-  <p>Create a a clone of this dataset</p>
-
-  <form class="dataset-form form-horizontal" method="post" action="" style="border-bottom: solid 1px #ddd;">
-
-		{% block package_basic_fields_title %}
-		  {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
-		{% endblock %}
-
-		{% block package_basic_fields_url %}
-		  {% set prefix = h.url_for(controller='package', action='read', id='') %}
-		  {% set domain = h.url_for(controller='package', action='read', id='', qualified=true) %}
-		  {% set domain = domain|replace("http://", "")|replace("https://", "") %}
-		  {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain, 'data-module-placeholder': '<dataset>'} %}
-
-		  {{ form.prepend('name', id='field-name', label=_('URL'), prepend=prefix, placeholder=_('eg. my-dataset'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
-		{% endblock %}
-		
-		{% if errorsOther %}
-		    <div class="error-explanation alert alert-error">
-		      <p>{{ _('Dataset cannot be cloned because the following require fields are missing:') }}</p>
-		      <ul>
-		        {% for key, error in errorsOther.items() %}
-		          <li data-field-label="{{ key }}">{% if key %}{{ key }}: {% endif %}{{ error }}</li>
-		        {% endfor %}
-		      </ul>
-		      <p style="text-decoration:underline">{% link_for 'Please provide values for these fields then try again.', controller='package', action='edit', id=pkg.name %}</p>
-		    </div>
-		  {% endif %}
-		
-        <input type="hidden" name="action-type" value="clone"/>
-   		<input type="submit" class="btn btn-primary" value="{{ _('Clone') }}" style="margin-bottom: 20px;" />
-  </form>
-  {% endif %}
+  {% block clone_fields %}
+    {% snippet 'package/snippets/dsaction-clone.html', pkg=pkg, data=data, errors=errors, form=form %}
+  {% endblock %}
 
 {% endblock %}
